@@ -30,18 +30,20 @@ router.post('/', validateProject, (req, res) => {
 
 router.put('/:id', validateProjectId, validateProject, (req,res) =>{
     if(req.body.completed == null){
-        res.status(400)._construct.end()
+        res.status(400).json({message: "Missing required content"})
+    } else {
+        Projects.update(req.params.id, req.body)
+        .then(project => {
+            res.status(200).json(project)
+        })
     }
-    Projects.update(req.params.id, req.body)
-    .then(project => {
-        res.status(200).json(project)
-    })
 })
+
 
 router.delete('/:id', validateProjectId, (req, res) => {
     Projects.remove(req.params.id)
     .then(response => {
-        res.status(200).json({message: "Project deleted"})
+        res.status(200).json({message: "Project has been deleted"})
     })
 })
 

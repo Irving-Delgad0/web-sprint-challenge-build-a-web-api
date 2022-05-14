@@ -3,7 +3,7 @@ const Projects = require('./projects-model')
 
 function validateProject(req, res, next) {
     if(!req.body.name || !req.body.description){
-        res.status(400).end()
+        res.status(400).json({message: "Missing required content"})
         return
     }
     next()
