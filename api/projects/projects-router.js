@@ -2,7 +2,7 @@
 const express = require('express')
 const Projects = require('./projects-model')
 
-const middleware = require('./projects-middleware')
+const {validateProject, validateProjectId} = require('./projects-middleware')
 
 const router = express.Router();
 
@@ -17,4 +17,39 @@ router.get('/', (req,res) => {
     })
 })
 
-module.exports = router;
+router.get('/:id', validateProjectId, (req,res) => {
+    res.json(req.project)
+})
+
+router.post('/', validateProject, (req, res) => {
+    Projects.insert(req.body)
+    .then(project => {
+        res.status(200).json(project)
+    })
+})
+
+router.put('/:id', validateProjectId, validateProject, (req,res) =>{
+    if(req.body.completed == null){
+        res.status(400)._construct.end()
+    }
+    Projects.update(req.params.id, req.body)
+    .then(project => {
+        res.status(200).json(project)
+    })
+})
+
+router.delete('/:id', validateProjectId, (req, res) => {
+    Projects.remove(req.params.id)
+    .then(response => {
+        res.status(200).json({message: "Project deleted"})
+    })
+})
+
+router.get('/:id/actions', validateProjectId, (req,res) => {
+    Projects.getProjectActions(req.params.id)
+    .then(actions => {
+        res.status(200).json(actions)
+    })
+})
+
+module.exports = router
